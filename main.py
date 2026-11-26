@@ -63,73 +63,155 @@ def render():
             y += spacing
         return y
 
-    rect(32, 24, 960, 5, RED)
-    text(32, 36, 'WEDNESDAY 25 NOVEMBER 2026', 'masthead')
-    text(34, 84, 'EIGHT STORIES, ONE DAY', 'label', RED)
-    rect(32, 117, 960, 2, INK)
+    def polygon(points, color):
+        for y in range(min(p[1] for p in points), max(p[1] for p in points)):
+            crossings = []
+            for (x1, y1), (x2, y2) in zip(points, points[1:] + points[:1]):
+                if min(y1, y2) <= y < max(y1, y2):
+                    crossings.append(x1 + (y - y1) * (x2 - x1) / (y2 - y1))
+            crossings.sort()
+            for left, right in zip(crossings[::2], crossings[1::2]):
+                rect(round(left), y, max(0, round(right) - round(left)), 1, color)
 
+    def stroke(points, color, thickness=4):
+        for (x1, y1), (x2, y2) in zip(points, points[1:]):
+            steps = max(abs(x2 - x1), abs(y2 - y1))
+            for step in range(steps + 1):
+                x = round(x1 + (x2 - x1) * step / max(1, steps))
+                y = round(y1 + (y2 - y1) * step / max(1, steps))
+                rect(x, y, thickness, thickness, color)
+
+    # The two additional colours are reserved for the editorial illustrations.
+    blue = (91, 132, 143)
+    gold = (213, 165, 78)
+
+    def illustration(kind, x, y):
+        if kind == 'bars':
+            for dx, height, color in ((30, 22, blue), (110, 40, gold), (190, 60, RED)):
+                rect(x + dx, y + 65 - height, 56, height, color)
+            rect(x + 12, y + 66, 264, 3, INK)
+        elif kind == 'market':
+            rect(x + 12, y + 66, 264, 2, INK)
+            polygon([(x + 14, y + 12), (x + 75, y + 28), (x + 120, y + 36),
+                     (x + 185, y + 55), (x + 274, y + 55), (x + 274, y + 66),
+                     (x + 14, y + 66)], gold)
+            stroke([(x + 14, y + 12), (x + 75, y + 28), (x + 120, y + 36),
+                    (x + 185, y + 55), (x + 274, y + 55)], RED, 5)
+        elif kind == 'space':
+            polygon([(x + 57, y + 58), (x + 66, y + 76), (x + 75, y + 58)], gold)
+            rect(x + 54, y + 24, 25, 36, blue)
+            polygon([(x + 54, y + 24), (x + 66, y + 4), (x + 79, y + 24)], RED)
+            polygon([(x + 54, y + 43), (x + 40, y + 63), (x + 54, y + 58)], INK)
+            polygon([(x + 79, y + 43), (x + 93, y + 63), (x + 79, y + 58)], INK)
+            rect(x + 61, y + 30, 10, 11, PAPER)
+            rect(x + 153, y + 35, 115, 5, INK)
+            rect(x + 146, y + 19, 33, 39, blue)
+            rect(x + 239, y + 19, 33, 39, blue)
+            for panel in (146, 239):
+                rect(x + panel + 15, y + 19, 3, 39, PAPER)
+                rect(x + panel, y + 37, 33, 3, PAPER)
+            rect(x + 196, y + 27, 26, 22, gold)
+            rect(x + 204, y + 12, 9, 51, gold)
+        elif kind == 'treaty':
+            polygon([(x, y + 6), (x + 25, y + 6), (x + 42, y + 21),
+                     (x + 25, y + 36), (x, y + 36)], blue)
+            polygon([(x + 62, y + 6), (x + 41, y + 6), (x + 25, y + 21),
+                     (x + 41, y + 36), (x + 62, y + 36)], gold)
+        elif kind == 'fire':
+            rect(x, y + 27, 66, 13, INK)
+            rect(x + 6, y + 32, 15, 3, PAPER)
+            rect(x + 42, y + 32, 15, 3, PAPER)
+            polygon([(x + 23, y + 27), (x + 18, y + 17), (x + 30, y),
+                     (x + 31, y + 12), (x + 41, y + 6), (x + 48, y + 21),
+                     (x + 41, y + 29)], RED)
+            polygon([(x + 29, y + 27), (x + 32, y + 15), (x + 40, y + 27)], gold)
+        elif kind == 'drones':
+            for dx, dy in ((2, 4), (36, 4), (2, 26), (36, 26)):
+                rect(x + dx + 3, y + dy + 4, 17, 5, blue)
+                stroke([(x + dx, y + dy), (x + dx + 22, y + dy + 14)], RED, 3)
+                stroke([(x + dx + 22, y + dy), (x + dx, y + dy + 14)], RED, 3)
+        elif kind == 'shop':
+            rect(x + 5, y + 7, 55, 35, gold)
+            rect(x, y + 3, 65, 9, RED)
+            rect(x + 12, y + 18, 18, 13, blue)
+            rect(x + 39, y + 17, 15, 25, INK)
+            polygon([(x + 54, y + 17), (x + 64, y + 12),
+                     (x + 64, y + 37), (x + 54, y + 42)], blue)
+        elif kind == 'court':
+            polygon([(x, y + 11), (x + 33, y), (x + 66, y + 11)], RED)
+            for dx in (8, 28, 48):
+                rect(x + dx, y + 16, 10, 23, blue)
+            rect(x, y + 42, 66, 5, INK)
+        else:
+            raise ValueError(kind)
+
+    rect(32, 23, 960, 5, RED)
+    text(32, 35, 'WEDNESDAY 25 NOVEMBER 2026', 'masthead')
+    text(34, 84, 'EIGHT STORIES FROM ONE DAY', 'label', RED)
+    rect(32, 116, 960, 2, INK)
     leads = [
-        ('WASHINGTON, TRADE', '14', 'New US tariffs proposed',
-         'The US proposes new tariffs on 14 partners, including China, Japan and the EU. '
-         'The proposed maximum rates run from 20 percent to 40 percent and target excess factory capacity. '
-         'The trade office says the new duties will not exceed caps already set in trade deals. '
+        ('WASHINGTON', 'bars', '14', 'New US tariffs proposed',
+         'The US proposes new tariffs on 14 partners, including China, Japan and the EU, '
+         'with proposed maximum rates from 20 percent to 40 percent. '
+         'The trade office says duties will not exceed existing deal caps. '
          'China calls the overcapacity claim a false issue.', 'Source: Reuters, 25 Nov.'),
-        ('SEOUL, MARKETS', '-6.16%', 'Kospi gives back its gain',
-         "The Kospi closes at 4,697.51, down 308.52 points, and gives back the previous day's gain. "
+        ('SEOUL', 'market', '-6.16%', 'Kospi gives back its gain',
+         'The Kospi closes at 4,697.51, down 308.52 points. '
          'A sell sidecar trips 8 minutes after the open. The Kosdaq ends down 2.29 percent.',
          'Source: Yonhap, 25 Nov.'),
-        ('JIUQUAN, SPACE', '24', 'Shenzhou lifts off',
-         'Shenzhou-24 lifts off from Jiuquan with Tang Hongbo, Wu Yi and Muhammad Zeeshan Ali. '
+        ('JIUQUAN', 'space', '24', 'Shenzhou-24 lifts off',
+         'Tang Hongbo, Wu Yi and Muhammad Zeeshan Ali lift off from Jiuquan. '
          "Ali is Pakistan's first astronaut and the first foreign crew member bound for Tiangong.",
          'Source: Xinhua, 25 Nov.'),
     ]
-    for x, (place, figure, headline, body, source) in zip((32, 362, 692), leads):
-        text(x, 134, place, 'label', RED)
-        assert text(x - 2, 149, figure, 'figure', RED) <= x + 300
-        paragraph(x, 253, headline, 300, 'headline', 32, 288)
-        paragraph(x, 291, body, 300, 'body', 25, 516)
-        text(x, 524, source, 'source')
+    for x, (place, art, figure, headline, body, source) in zip((32, 362, 692), leads):
+        text(x, 131, place, 'label', RED)
+        illustration(art, x, 161)
+        assert text(x - 2, 225, figure, 'figure', RED) <= x + 300
+        paragraph(x, 329, headline, 300, 'headline', 32, 363)
+        paragraph(x, 365, body, 300, 'body', 25, 565)
+        text(x, 569, source, 'source')
     for x in (347, 677):
-        rect(x, 137, 1, 407, INK)
-    rect(32, 556, 960, 2, INK)
+        rect(x, 133, 1, 456, INK)
+    rect(32, 600, 960, 2, INK)
 
-    middle = [
-        ('CANBERRA, DIPLOMACY', 'Security treaty signed',
-         'Australia and Solomon Islands sign a treaty in Canberra. '
-         'Australia is the primary security partner. '
-         'Solomon Islands decides there will be no foreign military base.',
+    smaller = [
+        ('CANBERRA', 'treaty', 'Security treaty signed',
+         'Australia and Solomon Islands sign a treaty: Australia is the primary security '
+         'partner, and Solomon Islands will have no foreign military base.',
          'Source: Prime Minister of Australia, 25 Nov.'),
-        ('CAIRO, DISASTER', 'At least 31 killed in fire',
-         'A fuel-tanker crash on the Ring Road starts a fire that kills at least 31 people and injures 21.',
+        ('CAIRO', 'fire', '31 killed on the ring road',
+         'A fuel-tanker crash starts a fire that kills at least 31 people and injures 21.',
          'Source: AP and BBC, 25 Nov.'),
-        ('RAS TANURA, CONFLICT', 'Refinery strike disputed',
-         "The Houthis say they struck Saudi Arabia's largest refinery and that fires followed. "
-         'The Saudi-led coalition says it destroyed four drones over Ras Tanura '
-         'and does not confirm a hit on the refinery.',
-         'Source: Reuters, 25 Nov.'),
+        ('RAS TANURA', 'drones', 'Refinery strike disputed',
+         'The Houthis report a refinery strike and fires; the coalition says it destroyed '
+         'four drones and does not confirm a refinery hit.', 'Source: Reuters, 25 Nov.'),
     ]
-    for x, (place, headline, body, source) in zip((32, 362, 692), middle):
-        text(x, 570, place, 'label', RED)
-        paragraph(x, 597, headline, 300, 'headline', 32, 632)
-        paragraph(x, 634, body, 300, 'body', 25, 784)
-        paragraph(x, 790, source, 300, 'source', 21, 830)
+    for x, (place, art, headline, body, source) in zip((32, 362, 692), smaller):
+        text(x, 614, place, 'label', RED)
+        illustration(art, x + 229, 603)
+        paragraph(x, 649, headline, 300, 'headline', 32, 685)
+        paragraph(x, 686, body, 300, 'body', 25, 810)
+        paragraph(x, 812, source, 300, 'source', 21, 836)
     for x in (347, 677):
-        rect(x, 573, 1, 250, INK)
-    rect(32, 838, 960, 2, INK)
+        rect(x, 613, 1, 222, INK)
+    rect(32, 845, 960, 2, INK)
 
     bottom = [
-        ('CARTAGENA, SECURITY',
-         'Police storm a supermarket and free the hostages after a siege that began on Tuesday. '
-         'One person police called a hostage-taker is killed.', 'Source: The Guardian, 25 Nov.'),
-        ('CAPE TOWN, COURTS',
-         'The Western Cape High Court sets aside the Phala Phala panel report in full. '
-         'That stalls the impeachment process against President Ramaphosa.', 'Source: News24, 25 Nov.'),
+        ('CARTAGENA', 'shop', 'Hostages freed',
+         'On Wednesday police storm a supermarket and free the hostages; '
+         'one person police called a hostage-taker is killed.', 'Source: The Guardian, 25 Nov.'),
+        ('CAPE TOWN', 'court', 'Phala Phala report set aside',
+         'The Western Cape High Court sets the panel report aside in full, '
+         'stalling impeachment against President Ramaphosa.', 'Source: News24, 25 Nov.'),
     ]
-    for x, (place, body, source) in zip((32, 527), bottom):
-        text(x, 850, place, 'label', RED)
-        paragraph(x, 877, body, 465, 'body', 25, 979)
-        text(x, 986, source, 'source')
-    rect(512, 853, 1, 151, INK)
+    for x, (place, art, headline, body, source) in zip((32, 527), bottom):
+        text(x, 856, place, 'label', RED)
+        illustration(art, x + 397, 854)
+        paragraph(x, 881, headline, 385, 'headline', 32, 915)
+        paragraph(x, 914, body, 465, 'body', 25, 991)
+        text(x, 994, source, 'source')
+    rect(512, 857, 1, 146, INK)
 
     def chunk(kind, data):
         return (struct.pack('>I', len(data)) + kind + data
