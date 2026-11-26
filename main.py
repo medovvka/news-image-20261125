@@ -81,67 +81,132 @@ def render():
                 y = round(y1 + (y2 - y1) * step / max(1, steps))
                 rect(x, y, thickness, thickness, color)
 
-    # The two additional colours are reserved for the editorial illustrations.
-    blue = (91, 132, 143)
-    gold = (213, 165, 78)
-
     def illustration(kind, x, y):
+        blue = (91, 132, 143)
+        gold = (213, 165, 78)
+        sand = (232, 220, 191)
+
+        def box(dx, dy, w, h, color):
+            rect(x + dx, y + dy, w, h, color)
+
+        def shape(points, color):
+            polygon([(x + dx, y + dy) for dx, dy in points], color)
+
+        def line(points, color, thickness=3):
+            stroke([(x + dx, y + dy) for dx, dy in points], color, thickness)
+
+        def ellipse(cx, cy, rx, ry, color):
+            for dy in range(-ry, ry + 1):
+                span = round(rx * (1 - (dy / ry) ** 2) ** 0.5)
+                box(cx - span, cy + dy, 2 * span + 1, 1, color)
+
         if kind == 'bars':
-            for dx, height, color in ((30, 22, blue), (110, 40, gold), (190, 60, RED)):
-                rect(x + dx, y + 65 - height, 56, height, color)
-            rect(x + 12, y + 66, 264, 3, INK)
+            for left, height, color in ((13, 28, blue), (101, 44, gold), (189, 60, RED)):
+                top = 67 - height
+                box(left, top, 68, height, color)
+                shape([(left, top), (left + 12, top - 7), (left + 80, top - 7),
+                       (left + 68, top)], sand)
+                shape([(left + 68, top), (left + 80, top - 7),
+                       (left + 80, 60), (left + 68, 67)], INK)
+                for rib in (9, 21, 33, 45, 57):
+                    box(left + rib, top + 5, 2, height - 10, PAPER)
+            box(4, 67, 276, 3, INK)
         elif kind == 'market':
-            rect(x + 12, y + 66, 264, 2, INK)
-            polygon([(x + 14, y + 12), (x + 75, y + 28), (x + 120, y + 36),
-                     (x + 185, y + 55), (x + 274, y + 55), (x + 274, y + 66),
-                     (x + 14, y + 66)], gold)
-            stroke([(x + 14, y + 12), (x + 75, y + 28), (x + 120, y + 36),
-                    (x + 185, y + 55), (x + 274, y + 55)], RED, 5)
+            for left, width, height in ((12, 27, 19), (43, 23, 31), (70, 31, 23),
+                                        (105, 21, 33), (133, 24, 17), (163, 32, 12),
+                                        (199, 22, 15), (225, 23, 11), (252, 20, 14)):
+                box(left, 67 - height, width, height, blue)
+                box(left + 5, 71 - height, 4, 4, sand)
+                box(left + 13, 71 - height, 4, 4, sand)
+            box(52, 30, 4, 8, blue)
+            box(4, 67, 276, 3, INK)
+            line([(8, 7), (53, 13), (84, 11), (119, 28),
+                  (147, 30), (180, 47), (274, 47)], RED, 5)
         elif kind == 'space':
-            polygon([(x + 57, y + 58), (x + 66, y + 76), (x + 75, y + 58)], gold)
-            rect(x + 54, y + 24, 25, 36, blue)
-            polygon([(x + 54, y + 24), (x + 66, y + 4), (x + 79, y + 24)], RED)
-            polygon([(x + 54, y + 43), (x + 40, y + 63), (x + 54, y + 58)], INK)
-            polygon([(x + 79, y + 43), (x + 93, y + 63), (x + 79, y + 58)], INK)
-            rect(x + 61, y + 30, 10, 11, PAPER)
-            rect(x + 153, y + 35, 115, 5, INK)
-            rect(x + 146, y + 19, 33, 39, blue)
-            rect(x + 239, y + 19, 33, 39, blue)
-            for panel in (146, 239):
-                rect(x + panel + 15, y + 19, 3, 39, PAPER)
-                rect(x + panel, y + 37, 33, 3, PAPER)
-            rect(x + 196, y + 27, 26, 22, gold)
-            rect(x + 204, y + 12, 9, 51, gold)
+            ellipse(27, 67, 22, 4, sand)
+            ellipse(98, 68, 24, 4, sand)
+            shape([(49, 49), (79, 49), (75, 59), (64, 74), (54, 62)], RED)
+            shape([(54, 49), (74, 49), (70, 61), (64, 70), (60, 61)], gold)
+            shape([(60, 50), (69, 50), (65, 61)], PAPER)
+            shape([(48, 33), (35, 55), (50, 50), (78, 50), (93, 55), (80, 33)], INK)
+            box(48, 16, 32, 35, sand)
+            box(70, 16, 10, 35, gold)
+            shape([(48, 16), (64, 0), (80, 16)], RED)
+            ellipse(62, 29, 7, 7, blue)
+            box(48, 45, 32, 6, RED)
+            box(137, 28, 132, 6, INK)
+            for panel in (136, 227):
+                box(panel, 12, 46, 37, blue)
+                for rib in (14, 29):
+                    box(panel + rib, 12, 2, 37, sand)
+                box(panel, 29, 46, 2, sand)
+            box(191, 21, 27, 21, gold)
+            box(197, 9, 15, 44, sand)
+            box(199, 24, 11, 13, INK)
         elif kind == 'treaty':
-            polygon([(x, y + 6), (x + 25, y + 6), (x + 42, y + 21),
-                     (x + 25, y + 36), (x, y + 36)], blue)
-            polygon([(x + 62, y + 6), (x + 41, y + 6), (x + 25, y + 21),
-                     (x + 41, y + 36), (x + 62, y + 36)], gold)
+            ellipse(82, 43, 67, 5, sand)
+            for cx, cy, color in ((59, 21, blue), (102, 21, gold)):
+                ellipse(cx, cy, 31, 20, color)
+                ellipse(cx, cy, 21, 12, PAPER)
+            shape([(74, 29), (84, 29), (80, 35), (70, 39), (64, 39), (64, 32)], blue)
         elif kind == 'fire':
-            rect(x, y + 27, 66, 13, INK)
-            rect(x + 6, y + 32, 15, 3, PAPER)
-            rect(x + 42, y + 32, 15, 3, PAPER)
-            polygon([(x + 23, y + 27), (x + 18, y + 17), (x + 30, y),
-                     (x + 31, y + 12), (x + 41, y + 6), (x + 48, y + 21),
-                     (x + 41, y + 29)], RED)
-            polygon([(x + 29, y + 27), (x + 32, y + 15), (x + 40, y + 27)], gold)
+            ellipse(79, 36, 78, 13, INK)
+            ellipse(79, 34, 64, 6, PAPER)
+            for left in (28, 53, 78, 103, 128):
+                box(left, 44, 12, 2, PAPER)
+            box(23, 17, 64, 15, blue)
+            ellipse(23, 24, 8, 7, blue)
+            ellipse(87, 24, 8, 7, blue)
+            box(26, 20, 58, 3, sand)
+            shape([(91, 30), (96, 18), (113, 18), (124, 29), (124, 36), (90, 36)], gold)
+            box(101, 21, 11, 6, INK)
+            box(16, 31, 109, 3, INK)
+            for wheel in (29, 68, 110):
+                ellipse(wheel, 35, 7, 7, sand)
+                ellipse(wheel, 35, 5, 5, INK)
+                ellipse(wheel, 35, 2, 2, sand)
+            shape([(113, 31), (110, 22), (116, 9), (121, 16), (130, 0),
+                   (132, 13), (140, 8), (147, 21), (144, 29), (135, 34)], RED)
+            shape([(124, 31), (120, 25), (129, 16), (130, 24), (137, 19), (139, 27),
+                   (135, 32)], gold)
         elif kind == 'drones':
-            for dx, dy in ((2, 4), (36, 4), (2, 26), (36, 26)):
-                rect(x + dx + 3, y + dy + 4, 17, 5, blue)
-                stroke([(x + dx, y + dy), (x + dx + 22, y + dy + 14)], RED, 3)
-                stroke([(x + dx + 22, y + dy), (x + dx, y + dy + 14)], RED, 3)
+            for cx, cy in ((19, 25), (59, 25), (99, 25), (139, 25)):
+                line([(cx - 12, cy - 9), (cx + 12, cy + 9)], blue, 4)
+                line([(cx + 12, cy - 9), (cx - 12, cy + 9)], blue, 4)
+                ellipse(cx, cy, 7, 9, INK)
+                for dx in (-12, 12):
+                    for dy in (-9, 9):
+                        ellipse(cx + dx, cy + dy, 6, 2, blue)
+                line([(cx - 13, cy - 14), (cx + 13, cy + 13)], RED)
+                line([(cx + 13, cy - 14), (cx - 13, cy + 13)], RED)
         elif kind == 'shop':
-            rect(x + 5, y + 7, 55, 35, gold)
-            rect(x, y + 3, 65, 9, RED)
-            rect(x + 12, y + 18, 18, 13, blue)
-            rect(x + 39, y + 17, 15, 25, INK)
-            polygon([(x + 54, y + 17), (x + 64, y + 12),
-                     (x + 64, y + 37), (x + 54, y + 42)], blue)
+            box(7, 7, 110, 68, sand)
+            box(7, 7, 110, 5, INK)
+            box(17, 37, 48, 25, blue)
+            for left in (22, 34, 46, 58):
+                box(left, 49, 5, 9, gold)
+            box(17, 58, 48, 4, INK)
+            box(75, 36, 26, 39, INK)
+            shape([(101, 36), (111, 31), (111, 68), (101, 75)], blue)
+            box(105, 51, 3, 5, gold)
+            shape([(8, 18), (116, 18), (124, 32), (0, 32)], RED)
+            for left in (16, 40, 64, 88):
+                shape([(left + 3, 18), (left + 13, 18), (left + 13, 32), (left, 32)], gold)
+            box(0, 75, 124, 4, INK)
         elif kind == 'court':
-            polygon([(x, y + 11), (x + 33, y), (x + 66, y + 11)], RED)
-            for dx in (8, 28, 48):
-                rect(x + dx, y + 16, 10, 23, blue)
-            rect(x, y + 42, 66, 5, INK)
+            box(16, 24, 92, 44, sand)
+            box(54, 34, 16, 34, INK)
+            shape([(4, 23), (62, 0), (120, 23)], RED)
+            shape([(27, 19), (62, 6), (97, 19)], sand)
+            box(8, 23, 108, 5, INK)
+            for left in (21, 55, 89):
+                box(left - 3, 29, 20, 4, blue)
+                box(left, 33, 14, 30, blue)
+                box(left + 3, 34, 3, 27, sand)
+                box(left - 3, 63, 20, 4, blue)
+            box(9, 67, 106, 5, gold)
+            box(4, 72, 116, 5, blue)
+            box(0, 77, 124, 4, INK)
         else:
             raise ValueError(kind)
 
@@ -151,9 +216,9 @@ def render():
     rect(54, 111, 916, 1, INK)
     leads = [
         ('WASHINGTON', 'bars', '14', 'New US tariffs proposed',
-         'The United States proposes tariffs on 14 partners, including China, Japan and '
-         'the European Union. Proposed maximum rates range from 20 to 40 percent. '
-         'The trade office says duties will stay within existing deal caps. '
+         'The United States proposes new tariffs on 14 partners, including China, Japan and '
+         'the European Union. Proposed maximum rates run from 20 percent to 40 percent. '
+         'The trade office says the new duties will not exceed the caps in existing deals. '
          'China calls the overcapacity claim a false issue.', 'Reuters'),
         ('SEOUL', 'market', '-6.16%', 'Kospi gives back its gain',
          'The Kospi closes at 4,697.51, down 308.52 points. '
@@ -169,7 +234,7 @@ def render():
         paragraph(x, 154, headline, 284, 'masthead', 39, 235)
         assert text(x - 3, 220, figure, 'figure', RED) <= x + 284
         illustration(art, x, 313)
-        y = paragraph(x, 393, body, 284, 'body', 21, 575)
+        y = paragraph(x, 387, body, 284, 'body', 20, 575)
         text(x, y + 4, source, 'source')
     rect(54, 596, 916, 2, RED)
 
@@ -183,7 +248,7 @@ def render():
          'AP and BBC'),
         ('RAS TANURA', 'drones', 'Refinery strike disputed',
          'The Houthis say they struck the refinery and that fires followed. The coalition '
-         'says it destroyed four drones and does not confirm a refinery hit.', 'Reuters'),
+         'says it destroyed four drones and does not confirm a hit on the refinery.', 'Reuters'),
         ('CARTAGENA', 'shop', 'Hostages freed',
          'Police storm a supermarket and free the hostages. '
          'One person police called a hostage-taker is killed.', 'The Guardian'),
@@ -194,10 +259,15 @@ def render():
     briefs = ((54, 606, 284), (370, 606, 296), (686, 606, 284),
               (54, 826, 442), (528, 826, 442))
     for (x, top, width), (place, art, headline, body, source) in zip(briefs, smaller):
-        text(x, top + 10, place, 'label', RED)
-        illustration(art, x + width - 76, top)
-        y = paragraph(x, top + 46, headline, width, 'headline', 27, top + 103)
-        y = paragraph(x, y + 7, body, width, 'body', 21, top + 190)
+        text(x, top + 9, place, 'label', RED)
+        if art in ('shop', 'court'):
+            illustration(art, x + 318, top + 54)
+            y = paragraph(x, top + 28, headline, width, 'headline', 27, top + 64)
+            y = paragraph(x, y + 5, body, 307, 'body', 21, 977)
+        else:
+            illustration(art, x + width - 159, top)
+            y = paragraph(x, top + 46, headline, width, 'headline', 27, top + 103)
+            y = paragraph(x, y + 7, body, width, 'body', 21, top + 190)
         text(x, y + 3, source, 'source')
     rect(54, 819, 916, 1, INK)
 
