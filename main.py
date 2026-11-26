@@ -145,73 +145,61 @@ def render():
         else:
             raise ValueError(kind)
 
-    rect(32, 23, 960, 5, RED)
-    text(32, 35, 'WEDNESDAY 25 NOVEMBER 2026', 'masthead')
-    text(34, 84, 'EIGHT STORIES FROM ONE DAY', 'label', RED)
-    rect(32, 116, 960, 2, INK)
+    rect(54, 43, 916, 4, RED)
+    text(54, 54, 'World News', 'masthead')
+    text(623, 62, 'Wednesday 25 November 2026', 'headline')
+    rect(54, 111, 916, 1, INK)
     leads = [
         ('WASHINGTON', 'bars', '14', 'New US tariffs proposed',
-         'The US proposes new tariffs on 14 partners, including China, Japan and the EU, '
-         'with proposed maximum rates from 20 percent to 40 percent. '
-         'The trade office says duties will not exceed existing deal caps. '
-         'China calls the overcapacity claim a false issue.', 'Source: Reuters, 25 Nov.'),
+         'The United States proposes tariffs on 14 partners, including China, Japan and '
+         'the European Union. Proposed maximum rates range from 20 to 40 percent. '
+         'The trade office says duties will stay within existing deal caps. '
+         'China calls the overcapacity claim a false issue.', 'Reuters'),
         ('SEOUL', 'market', '-6.16%', 'Kospi gives back its gain',
          'The Kospi closes at 4,697.51, down 308.52 points. '
          'A sell sidecar trips 8 minutes after the open. The Kosdaq ends down 2.29 percent.',
-         'Source: Yonhap, 25 Nov.'),
+         'Yonhap'),
         ('JIUQUAN', 'space', '24', 'Shenzhou-24 lifts off',
          'Tang Hongbo, Wu Yi and Muhammad Zeeshan Ali lift off from Jiuquan. '
          "Ali is Pakistan's first astronaut and the first foreign crew member bound for Tiangong.",
-         'Source: Xinhua, 25 Nov.'),
+         'Xinhua'),
     ]
-    for x, (place, art, figure, headline, body, source) in zip((32, 362, 692), leads):
-        text(x, 131, place, 'label', RED)
-        illustration(art, x, 161)
-        assert text(x - 2, 225, figure, 'figure', RED) <= x + 300
-        paragraph(x, 329, headline, 300, 'headline', 32, 363)
-        paragraph(x, 365, body, 300, 'body', 25, 565)
-        text(x, 569, source, 'source')
-    for x in (347, 677):
-        rect(x, 133, 1, 456, INK)
-    rect(32, 600, 960, 2, INK)
+    for x, (place, art, figure, headline, body, source) in zip((54, 370, 686), leads):
+        text(x, 133, place, 'label', RED)
+        paragraph(x, 154, headline, 284, 'masthead', 39, 235)
+        assert text(x - 3, 220, figure, 'figure', RED) <= x + 284
+        illustration(art, x, 313)
+        y = paragraph(x, 393, body, 284, 'body', 21, 575)
+        text(x, y + 4, source, 'source')
+    rect(54, 596, 916, 2, RED)
 
     smaller = [
         ('CANBERRA', 'treaty', 'Security treaty signed',
-         'Australia and Solomon Islands sign a treaty: Australia is the primary security '
+         'Australia and Solomon Islands sign a treaty. Australia is the primary security '
          'partner, and Solomon Islands will have no foreign military base.',
-         'Source: Prime Minister of Australia, 25 Nov.'),
+         'Prime Minister of Australia'),
         ('CAIRO', 'fire', '31 killed on the ring road',
          'A fuel-tanker crash starts a fire that kills at least 31 people and injures 21.',
-         'Source: AP and BBC, 25 Nov.'),
+         'AP and BBC'),
         ('RAS TANURA', 'drones', 'Refinery strike disputed',
-         'The Houthis report a refinery strike and fires; the coalition says it destroyed '
-         'four drones and does not confirm a refinery hit.', 'Source: Reuters, 25 Nov.'),
-    ]
-    for x, (place, art, headline, body, source) in zip((32, 362, 692), smaller):
-        text(x, 614, place, 'label', RED)
-        illustration(art, x + 229, 603)
-        paragraph(x, 649, headline, 300, 'headline', 32, 685)
-        paragraph(x, 686, body, 300, 'body', 25, 810)
-        paragraph(x, 812, source, 300, 'source', 21, 836)
-    for x in (347, 677):
-        rect(x, 613, 1, 222, INK)
-    rect(32, 845, 960, 2, INK)
-
-    bottom = [
+         'The Houthis say they struck the refinery and that fires followed. The coalition '
+         'says it destroyed four drones and does not confirm a refinery hit.', 'Reuters'),
         ('CARTAGENA', 'shop', 'Hostages freed',
-         'On Wednesday police storm a supermarket and free the hostages; '
-         'one person police called a hostage-taker is killed.', 'Source: The Guardian, 25 Nov.'),
+         'Police storm a supermarket and free the hostages. '
+         'One person police called a hostage-taker is killed.', 'The Guardian'),
         ('CAPE TOWN', 'court', 'Phala Phala report set aside',
-         'The Western Cape High Court sets the panel report aside in full, '
-         'stalling impeachment against President Ramaphosa.', 'Source: News24, 25 Nov.'),
+         'The Western Cape High Court sets the panel report aside in full. '
+         'The ruling stalls the impeachment process against President Ramaphosa.', 'News24'),
     ]
-    for x, (place, art, headline, body, source) in zip((32, 527), bottom):
-        text(x, 856, place, 'label', RED)
-        illustration(art, x + 397, 854)
-        paragraph(x, 881, headline, 385, 'headline', 32, 915)
-        paragraph(x, 914, body, 465, 'body', 25, 991)
-        text(x, 994, source, 'source')
-    rect(512, 857, 1, 146, INK)
+    briefs = ((54, 606, 284), (370, 606, 296), (686, 606, 284),
+              (54, 826, 442), (528, 826, 442))
+    for (x, top, width), (place, art, headline, body, source) in zip(briefs, smaller):
+        text(x, top + 10, place, 'label', RED)
+        illustration(art, x + width - 76, top)
+        y = paragraph(x, top + 46, headline, width, 'headline', 27, top + 103)
+        y = paragraph(x, y + 7, body, width, 'body', 21, top + 190)
+        text(x, y + 3, source, 'source')
+    rect(54, 819, 916, 1, INK)
 
     def chunk(kind, data):
         return (struct.pack('>I', len(data)) + kind + data
